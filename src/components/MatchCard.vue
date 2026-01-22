@@ -66,7 +66,12 @@ function openPlayer(playerId) {
             class="match-player"
             @click="openPlayer(player.id)"
           >
-            {{ player.displayName }}
+            <img
+              class="player-avatar"
+              :src="player.avatarUrl"
+              :alt="player.displayName"
+            />
+            <span>{{ player.displayName }}</span>
           </button>
         </div>
       </div>
@@ -81,7 +86,7 @@ function openPlayer(playerId) {
           {{ matchSummary }}
         </div>
       </div>
-      <div class="match-side">
+      <div class="match-side match-side-away">
         <div class="match-team">
           <img class="team-flag" src="/flags/vietnam.svg" alt="Vietnam flag" />
           Vietnam
@@ -94,7 +99,12 @@ function openPlayer(playerId) {
             class="match-player"
             @click="openPlayer(player.id)"
           >
-            {{ player.displayName }}
+            <span>{{ player.displayName }}</span>
+            <img
+              class="player-avatar"
+              :src="player.avatarUrl"
+              :alt="player.displayName"
+            />
           </button>
         </div>
       </div>
@@ -235,6 +245,10 @@ function openPlayer(playerId) {
   gap: 6px;
 }
 
+.match-side-away {
+  text-align: right;
+}
+
 .match-team {
   font-weight: 600;
   font-size: 0.85rem;
@@ -242,6 +256,10 @@ function openPlayer(playerId) {
   display: inline-flex;
   gap: 8px;
   align-items: center;
+}
+
+.match-side-away .match-team {
+  justify-content: flex-end;
 }
 
 .match-players {
@@ -258,11 +276,27 @@ function openPlayer(playerId) {
   text-align: left;
   cursor: pointer;
   font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .match-player:hover {
   color: rgba(15, 23, 42, 1);
   text-decoration: underline;
+}
+
+.match-side-away .match-player {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.player-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 2px #ffffff;
 }
 
 .match-score-text {
