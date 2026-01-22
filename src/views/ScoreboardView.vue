@@ -11,6 +11,9 @@ const matchCount = computed(() => store.matches.length)
 const completedCount = computed(
   () => store.matches.filter((match) => match.status === 'final').length,
 )
+const tournamentComplete = computed(
+  () => matchCount.value > 0 && completedCount.value === matchCount.value,
+)
 const teamPoints = computed(() => store.teamPoints)
 const totalPoints = computed(() => store.matches.length)
 const usaPoints = computed(() => teamPoints.value.usa ?? 0)
@@ -21,6 +24,7 @@ const usaPercent = computed(() =>
 const vietnamPercent = computed(() => 100 - usaPercent.value)
 const winThreshold = computed(() => totalPoints.value / 2 + 0.5)
 const winner = computed(() => {
+  if (!tournamentComplete.value) return null
   if (usaPoints.value >= winThreshold.value) return 'usa'
   if (vietnamPoints.value >= winThreshold.value) return 'vietnam'
   return null
@@ -135,7 +139,7 @@ const segmentCount = computed(() => totalPoints.value)
 .tournament-track {
   position: relative;
   display: flex;
-  height: 16px;
+  height: 28px;
   border-radius: 999px;
   overflow: hidden;
   background: #e5e7eb;
