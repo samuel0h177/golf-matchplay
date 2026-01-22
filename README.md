@@ -1,5 +1,72 @@
-# Vue 3 + Vite
+# Golf Matchplay (Ryder‑style)
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Matchplay scorekeeper modeled after the official Ryder Cup scoring UI. Built with Vue 3, Vuetify 3, Vite, and Pinia, with Faker data and PWA support.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Highlights
+
+- Ryder‑style scoreboard layout with match cards and hole indicators
+- Clickable hole balls to record winners (USA → Vietnam → halved)
+- Player drawer with Faker profiles and avatars
+- Admin page for assigning players and editing match states
+- LocalStorage persistence (auto‑saved)
+- PWA manifest + service worker enabled
+
+## Tech Stack
+
+- Vue 3 + Vite
+- Vuetify 3
+- Pinia
+- Vue Router
+- Vite PWA plugin
+- Faker.js
+
+## Getting Started
+
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173/`.
+
+## Routes
+
+- `/` — Scoreboard
+- `/admin` — Admin controls (match status, player assignments, hole results)
+
+## Scorekeeping
+
+- Click a hole ball to cycle results: USA → Vietnam → halved.
+- The win bar on each match shows who is leading.
+- A “Final” label appears next to the match score when a match is played thru 18.
+
+## Data Model (Seeded)
+
+Seed data lives in `src/data/seed.js`. Each match includes:
+
+```json
+{
+  "id": "match-1",
+  "sessionId": "fri-foursomes",
+  "status": "in_progress",
+  "score": {
+    "leader": "usa",
+    "holesUp": 1,
+    "thru": 12,
+    "holes": ["usa", null, "vietnam", "..."]
+  }
+}
+```
+
+## Persistence
+
+State auto‑saves to localStorage. Use the “Reseed data” button in the Admin page to reset.
+
+## PWA
+
+PWA support is enabled in `vite.config.js`. The current app icon uses `/vite.svg` as a placeholder.
+
+## Notes
+
+- Flags are stored under `public/flags/`.
+- Team colors: USA (red) vs Vietnam (blue).
