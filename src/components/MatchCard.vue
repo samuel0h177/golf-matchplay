@@ -25,11 +25,20 @@ const teamBPlayers = computed(() =>
 )
 
 const matchSummary = computed(() => store.matchSummary(props.match))
-const matchStatus = computed(() =>
-  props.match.status === 'final' ? 'Final' : 'Live',
-)
+const isFinal = computed(() => props.match.status === 'final' || props.match.score?.thru === 18)
+const matchStatus = computed(() => (isFinal.value ? 'Final' : 'Live'))
 const leader = computed(() => props.match.score?.leader ?? null)
-const holeResults = computed(() => props.match.score?.holes ?? [])
+const holeResults = computed(() => {
+  const holes = props.match.score?.holes ?? []
+  const thru = Number(props.match.score?.thru ?? 0)
+
+  return Array.from({ length: 18 }, (_, index) => {
+    if (props.match.status !== 'final' && index >= thru) {
+      return 'unplayed'
+    }
+    return holes[index] ?? null
+  })
+})
 const usaPercent = computed(() => {
   if (leader.value === 'usa') return 100
   if (leader.value === 'vietnam') return 0
@@ -42,6 +51,34 @@ const activePlayerId = ref(null)
 function openPlayer(playerId) {
   activePlayerId.value = playerId
   drawerOpen.value = true
+}
+
+function ensureHoles() {
+  if (!props.match.score) {
+    props.match.score = { leader: null, holesUp: 0, thru: 0, holes: Array(18).fill(null) }
+    return
+  }
+  if (!Array.isArray(props.match.score.holes)) {
+    props.match.score.holes = Array(18).fill(null)
+    return
+  }
+  if (props.match.score.holes.length < 18) {
+    props.match.score.holes = [
+      ...props.match.score.holes,
+      ...Array(18 - props.match.score.holes.length).fill(null),
+    ]
+  }
+}
+
+function cycleHole(index) {
+  ensureHoles()
+  const current = props.match.score.holes[index]
+  const next = current === 'usa' ? 'vietnam' : current === 'vietnam' ? null : 'usa'
+  props.match.score.holes[index] = next
+
+  if (props.match.status !== 'final') {
+    props.match.score.thru = Math.max(props.match.score.thru ?? 0, index + 1)
+  }
 }
 </script>
 
@@ -84,6 +121,7 @@ function openPlayer(playerId) {
           }"
         >
           {{ matchSummary }}
+          <span v-if="isFinal" class="score-final">Final</span>
         </div>
       </div>
       <div class="match-side match-side-away">
@@ -111,17 +149,21 @@ function openPlayer(playerId) {
     </div>
 
     <div class="match-holes">
-      <div
+      <button
         v-for="holeIndex in 18"
         :key="holeIndex"
+        type="button"
         class="hole-chip"
         :class="{
           'hole-usa': holeResults[holeIndex - 1] === 'usa',
           'hole-vietnam': holeResults[holeIndex - 1] === 'vietnam',
+          'hole-tied': holeResults[holeIndex - 1] === null,
+          'hole-unplayed': holeResults[holeIndex - 1] === 'unplayed',
         }"
+        @click="cycleHole(holeIndex - 1)"
       >
         {{ holeIndex }}
-      </div>
+      </button>
     </div>
 
     <div class="match-winbar">
@@ -190,6 +232,8 @@ function openPlayer(playerId) {
   font-weight: 600;
   color: #111827;
   background: #e5e7eb;
+  border: none;
+  cursor: pointer;
 }
 
 .hole-usa {
@@ -200,6 +244,16 @@ function openPlayer(playerId) {
 .hole-vietnam {
   background: #0050b5;
   color: #fff;
+}
+
+.hole-tied {
+  background: #d1d5db;
+  color: #111827;
+}
+
+.hole-unplayed {
+  background: #f3f4f6;
+  color: #9ca3af;
 }
 
 .match-winbar {
@@ -305,6 +359,9 @@ function openPlayer(playerId) {
   text-align: center;
   min-width: 64px;
   color: #111827;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
 }
 
 .team-flag {
@@ -321,5 +378,12 @@ function openPlayer(playerId) {
 
 .score-vietnam {
   color: #0050b5;
+}
+
+.score-final {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08rem;
+  color: rgba(15, 23, 42, 0.6);
 }
 </style>
