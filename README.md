@@ -1,5 +1,7 @@
 # Golf Matchplay (Ryder‑style)
 
+[![Deploy to GitHub Pages](https://github.com/OWNER/REPO/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/deploy-pages.yml)
+
 Matchplay scorekeeper modeled after the official Ryder Cup scoring UI. Built with Vue 3, Vuetify 3, Vite, and Pinia, with Faker data and PWA support.
 
 ## Highlights
@@ -81,7 +83,24 @@ State auto‑saves to localStorage. Use the “Reseed data” button in the Admi
 
 ## PWA
 
-PWA support is enabled in `vite.config.js`. The current app icon uses `/vite.svg` as a placeholder.
+PWA support is enabled in `vite.config.js`.
+
+### Install Without Browser Chrome
+
+To get a full-screen, app-like experience you must install the PWA:
+
+- Android (Chrome): open the site and tap “Install app”.
+- iOS (Safari): Share → “Add to Home Screen”.
+
+The PWA icon is defined in `public/icons/app-icon.svg`.
+
+## Staging on GitHub Pages
+
+Push to `main` to deploy automatically. The build uses a base path of `/<repo>/` so the app works from GitHub Pages.
+
+Staging URL: `https://OWNER.github.io/REPO/`
+
+Update the badge and URL once you know the repo name.
 
 ## Notes
 
