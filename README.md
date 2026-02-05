@@ -29,6 +29,23 @@ npm run dev
 
 Open `http://localhost:5173/`.
 
+## Local Network + QR
+
+Run the dev server on your LAN and generate a QR code for your phone:
+
+```bash
+npm run dev:host
+npm run qr:local
+```
+
+Find your local IP (example: `192.168.1.50`), then:
+
+```bash
+npm run qr -- --url http://192.168.1.50:5173/
+```
+
+Open `http://192.168.1.50:5173/` on your phone or scan `public/qr.png`.
+
 ## Routes
 
 - `/` — Scoreboard

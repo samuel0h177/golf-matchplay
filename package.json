@@ -5,13 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:host": "vite --host",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "qr": "node scripts/generate-qr.mjs",
+    "qr:local": "node scripts/generate-qr-local.mjs"
   },
   "dependencies": {
     "@faker-js/faker": "^10.2.0",
     "@mdi/font": "^7.4.47",
     "pinia": "^3.0.4",
+    "qrcode": "^1.5.4",
     "sass": "^1.97.3",
     "vite-plugin-pwa": "^1.2.0",
     "vite-plugin-vuetify": "^2.1.3",

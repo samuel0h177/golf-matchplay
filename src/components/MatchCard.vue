@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useEventStore } from '../stores/eventStore'
+import { useAuthStore } from '../stores/authStore'
 import PlayerDrawer from './PlayerDrawer.vue'
 
 const props = defineProps({
@@ -11,6 +12,7 @@ const props = defineProps({
 })
 
 const store = useEventStore()
+const auth = useAuthStore()
 
 const teamAPlayers = computed(() =>
   props.match.teamAPlayerIds
@@ -38,6 +40,16 @@ const holeResults = computed(() => {
     }
     return holes[index] ?? null
   })
+})
+const canEdit = computed(() => {
+  if (!auth.isAuthenticated) return false
+  if (auth.canEditAnyMatch) return true
+  const playerId = auth.currentUser?.playerId
+  if (!playerId) return false
+  return (
+    props.match.teamAPlayerIds.includes(playerId) ||
+    props.match.teamBPlayerIds.includes(playerId)
+  )
 })
 const usaPercent = computed(() => {
   if (leader.value === 'usa') return 100
@@ -71,6 +83,7 @@ function ensureHoles() {
 }
 
 function cycleHole(index) {
+  if (!canEdit.value) return
   ensureHoles()
   const current = props.match.score.holes[index]
   const next = current === 'usa' ? 'vietnam' : current === 'vietnam' ? null : 'usa'
@@ -159,8 +172,10 @@ function cycleHole(index) {
           'hole-vietnam': holeResults[holeIndex - 1] === 'vietnam',
           'hole-tied': holeResults[holeIndex - 1] === null,
           'hole-unplayed': holeResults[holeIndex - 1] === 'unplayed',
+          'hole-disabled': !canEdit,
         }"
         @click="cycleHole(holeIndex - 1)"
+        :disabled="!canEdit"
       >
         {{ holeIndex }}
       </button>
@@ -234,6 +249,11 @@ function cycleHole(index) {
   background: #e5e7eb;
   border: none;
   cursor: pointer;
+}
+
+.hole-chip.hole-disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .hole-usa {
